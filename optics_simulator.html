@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>빛의 광학 종합 시뮬레이터</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg: #0a0c10;
+  --bg2: #0f1218;
+  --bg3: #151a22;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8edf5;
+  --text2: #7a8899;
+  --text3: #4a5568;
+  --accent: #3b9eff;
+  --accent2: #00d4aa;
+  --amber: #f5a623;
+  --red: #ff5b5b;
+  --purple: #a78bfa;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Noto Sans KR', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-title {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: .5px;
+}
+.header-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.header-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  color: var(--accent);
+  opacity: .7;
+}
+
+/* LAYOUT */
+.app { display: grid; grid-template-columns: 260px 1fr; height: calc(100vh - 53px); overflow: hidden; }
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.section-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  color: var(--text3);
+  margin-bottom: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.section-title:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.section-title.blue { color: var(--accent); }
+.section-title.green { color: var(--accent2); }
+.section-title.amber { color: var(--amber); }
+
+.ctrl { margin-bottom: 10px; }
+.ctrl-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text2);
+  margin-bottom: 4px;
+}
+.ctrl-label .val {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+input[type=range] {
+  width: 100%;
+  height: 3px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--bg3);
+  border-radius: 2px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.wl-slider::-webkit-slider-thumb { background: var(--wl-color, #fff); }
+
+.med-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.med-btn {
+  font-size: 10px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text2);
+  transition: all .15s;
+  text-align: center;
+  font-family: var(--sans);
+}
+.med-btn:hover { border-color: var(--border2); color: var(--text); }
+.med-btn.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.wl-preview {
+  height: 5px;
+  border-radius: 3px;
+  margin-top: 4px;
+  background: linear-gradient(to right,#8B00FF,#4B0082,#0055ff,#00AAFF,#00FF88,#FFFF00,#FF8800,#FF0000);
+}
+
+/* MODE TABS */
+.mode-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px; }
+.mode-tab {
+  font-size: 11px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text2);
+  transition: all .15s;
+  font-family: var(--sans);
+}
+.mode-tab:hover { border-color: var(--border2); color: var(--text); }
+.mode-tab.on { background: var(--bg3); border-color: var(--accent); color: var(--accent); }
+
+/* MAIN AREA */
+.main { display: flex; flex-direction: column; overflow: hidden; }
+
+.canvas-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+canvas { display: block; }
+#main-canvas { width: 100%; height: 100%; }
+
+/* STATS BAR */
+.stats-bar {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+.stats-bar::-webkit-scrollbar { height: 3px; }
+.stats-bar::-webkit-scrollbar-thumb { background: var(--border2); }
+.stat {
+  padding: 8px 16px;
+  border-right: 1px solid var(--border);
+  min-width: 100px;
+  flex-shrink: 0;
+}
+.stat-label { font-size: 10px; color: var(--text3); margin-bottom: 2px; font-family: var(--mono); }
+.stat-value { font-size: 14px; font-weight: 500; font-family: var(--mono); color: var(--text); }
+.stat-value.highlight { color: var(--accent); }
+.stat-value.danger { color: var(--red); }
+.stat-value.success { color: var(--accent2); }
+
+/* TIR BADGE */
+.tir-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255,91,91,0.15);
+  border: 1px solid rgba(255,91,91,0.3);
+  color: var(--red);
+  opacity: 0;
+  transition: opacity .3s;
+  font-family: var(--mono);
+}
+.tir-badge.on { opacity: 1; }
+
+/* BOTTOM PANEL */
+.bottom-panel {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+.panel-tabs { display: flex; border-bottom: 1px solid var(--border); }
+.panel-tab {
+  font-size: 11px;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  color: var(--text2);
+  transition: all .15s;
+  font-family: var(--mono);
+  flex-shrink: 0;
+}
+.panel-tab:hover { color: var(--text); }
+.panel-tab.on { color: var(--accent); border-bottom-color: var(--accent); }
+.panel-content { padding: 12px 16px; display: none; max-height: 220px; overflow-y: auto; }
+.panel-content.on { display: block; }
+.panel-content::-webkit-scrollbar { width: 4px; }
+.panel-content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* TABLE */
+.data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.data-table th {
+  text-align: left;
+  padding: 5px 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  font-weight: 500;
+}
+.data-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; font-family: var(--mono); color: var(--text2); }
+.data-table td.val { color: var(--text); }
+.data-table td.del { cursor: pointer; color: var(--text3); text-align: center; }
+.data-table td.del:hover { color: var(--red); }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.empty-msg { color: var(--text3); font-size: 12px; padding: 16px 0; font-family: var(--mono); }
+
+/* RECORD BTN */
+.rec-btn {
+  font-size: 11px;
+  padding: 5px 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: opacity .15s;
+}
+.rec-btn:hover { opacity: .85; }
+.copy-btn {
+  font-size: 11px;
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--mono);
+}
+.copy-btn:hover { border-color: var(--border2); color: var(--text); }
+.btn-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+
+/* FORMULA */
+.formula-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.formula-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.formula-card .f-title { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-bottom: 4px; letter-spacing: .5px; }
+.formula-card .f-eq { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent); }
+.formula-card .f-desc { font-size: 11px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
+
+/* VAR TABLE */
+.var-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.var-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.var-card.vi { border-top: 2px solid var(--accent); }
+.var-card.vd { border-top: 2px solid var(--accent2); }
+.var-card.vc { border-top: 2px solid var(--amber); }
+.var-card .vt { font-size: 11px; font-weight: 500; margin-bottom: 6px; font-family: var(--mono); }
+.vi .vt { color: var(--accent); }
+.vd .vt { color: var(--accent2); }
+.vc .vt { color: var(--amber); }
+.var-item { font-size: 11px; color: var(--text2); padding: 2px 0; display: flex; gap: 6px; align-items: flex-start; }
+.vdot { width: 5px; height: 5px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.vi .vdot { background: var(--accent); }
+.vd .vdot { background: var(--accent2); }
+.vc .vdot { background: var(--amber); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">OPTICS LAB — 빛의 광학 종합 시뮬레이터</div>
+    <div class="header-sub">굴절 · 전반사 · 프리즘 분산 · 광섬유 · 편광 · 렌즈 통합</div>
+  </div>
+  <div class="header-badge">고2 물리학 수행평가</div>
+</div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="section-title" style="color:#4a5568;margin-top:0;padding-top:0;border:none">시뮬레이션 모드</div>
+    <div class="mode-tabs">
+      <div class="mode-tab on" onclick="setMode('refract',this)">굴절</div>
+      <div class="mode-tab" onclick="setMode('prism',this)">프리즘</div>
+      <div class="mode-tab" onclick="setMode('fiber',this)">광섬유</div>
+      <div class="mode-tab" onclick="setMode('pol',this)">편광</div>
+      <div class="mode-tab" onclick="setMode('lens',this)">렌즈</div>
+    </div>
+
+    <!-- 독립변인 -->
+    <div class="section-title blue">독립변인 (Independent)</div>
+
+    <div class="ctrl" id="ctrl-angle">
+      <div class="ctrl-label">입사각 θ₁ <span class="val" id="lbl-angle">40°</span></div>
+      <input type="range" id="sl-angle" min="0" max="89" value="40" oninput="onSlider()">
+    </div>
+
+    <div class="ctrl" id="ctrl-wl">
+      <div class="ctrl-label">파장 λ <span class="val" id="lbl-wl">550 nm</span></div>
+      <input type="range" class="wl-slider" id="sl-wl" min="380" max="750" value="550" oninput="onSlider()">
+      <div class="wl-preview"></div>
+    </div>
+
+    <div class="ctrl" id="ctrl-media" style="margin-bottom:0">
+      <div class="ctrl-label" style="margin-bottom:5px">매질 1</div>
+      <div class="med-grid" id="m1g"></div>
+    </div>
+    <div class="ctrl" id="ctrl-media2" style="margin-top:8px">
+      <div class="ctrl-label" style="margin-bottom:5px">매질 2</div>
+      <div class="med-grid" id="m2g"></div>
+    </div>
+
+    <div class="ctrl" id="ctrl-apex" style="display:none">
+      <div class="ctrl-label">프리즘 꼭지각 <span class="val" id="lbl-apex">60°</span></div>
+      <input type="range" id="sl-apex" min="20" max="75" value="60" oninput="onSlider()">
+    </div>
+    <div class="ctrl" id="ctrl-ncore" style="display:none">
+      <div class="ctrl-label">코어 굴절률 <span class="val" id="lbl-ncore">1.50</span></div>
+      <input type="range" id="sl-ncore" min="100" max="260" value="150" oninput="onSlider()">
+    </div>
+    <div class="ctrl" id="ctrl-nclad" style="display:none">
+      <div class="ctrl-label">클래딩 굴절률 <span class="val" id="lbl-nclad">1.45</span></div>
+      <input type="range" id="sl-nclad" min="100" max="255" value="145" oninput="onSlider()">
+    </div>
+    <div class="ctrl" id="ctrl-polang" style="display:none">
+      <div class="ctrl-label">편광판2 각도 θ <span class="val" id="lbl-polang">0°</span></div>
+      <input type="range" id="sl-polang" min="0" max="180" value="0" oninput="onSlider()">
+    </div>
+    <div class="ctrl" id="ctrl-f" style="display:none">
+      <div class="ctrl-label">초점거리 f <span class="val" id="lbl-f">+120</span></div>
+      <input type="range" id="sl-f" min="50" max="200" value="120" oninput="onSlider()">
+    </div>
+    <div class="ctrl" id="ctrl-u" style="display:none">
+      <div class="ctrl-label">물체 거리 u <span class="val" id="lbl-u">200</span></div>
+      <input type="range" id="sl-u" min="20" max="380" value="200" oninput="onSlider()">
+    </div>
+    <div class="ctrl" id="ctrl-lenstype" style="display:none">
+      <div class="ctrl-label" style="margin-bottom:5px">렌즈 종류</div>
+      <div style="display:flex;gap:4px">
+        <div class="med-btn on" id="btn-convex" style="flex:1" onclick="setLensType('convex')">볼록 (+)</div>
+        <div class="med-btn" id="btn-concave" style="flex:1" onclick="setLensType('concave')">오목 (−)</div>
+      </div>
+    </div>
+
+    <!-- 통제변인 -->
+    <div class="section-title amber">통제변인 (Controlled)</div>
+    <div class="ctrl">
+      <div class="ctrl-label">온도 <span class="val" id="lbl-temp">25°C</span></div>
+      <input type="range" id="sl-temp" min="0" max="100" value="25" oninput="onSlider()">
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-label">빛의 세기 <span class="val" id="lbl-int">100%</span></div>
+      <input type="range" id="sl-int" min="10" max="100" value="100" oninput="onSlider()">
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="canvas-area">
+      <canvas id="main-canvas"></canvas>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-label">MODE</div><div class="stat-value highlight" id="st-mode">굴절</div></div>
+      <div class="stat"><div class="stat-label">v₁ (매질1)</div><div class="stat-value" id="st-v1">—</div></div>
+      <div class="stat"><div class="stat-label">v₂ (매질2)</div><div class="stat-value" id="st-v2">—</div></div>
+      <div class="stat"><div class="stat-label">굴절각 θ₂</div><div class="stat-value" id="st-t2">—</div></div>
+      <div class="stat"><div class="stat-label">반사율 R</div><div class="stat-value" id="st-R">—</div></div>
+      <div class="stat"><div class="stat-label">임계각</div><div class="stat-value" id="st-crit">—</div></div>
+      <div class="stat" id="st-extra"><div class="stat-label" id="st-extra-lbl">n₁/n₂</div><div class="stat-value" id="st-extra-val">—</div></div>
+      <div class="stat" style="border:none">
+        <div class="stat-label">상태</div>
+        <span class="tir-badge" id="tir-badge">⚡ 전반사</span>
+      </div>
+    </div>
+
+    <!-- BOTTOM PANEL -->
+    <div class="bottom-panel">
+      <div class="panel-tabs">
+        <div class="panel-tab on" onclick="setPTab('data',this)">데이터 기록</div>
+        <div class="panel-tab" onclick="setPTab('var',this)">변인 정리</div>
+        <div class="panel-tab" onclick="setPTab('formula',this)">공식 참고</div>
+      </div>
+
+      <!-- DATA -->
+      <div class="panel-content on" id="ptab-data">
+        <div class="btn-row">
+          <button class="rec-btn" onclick="record()">+ 데이터 기록</button>
+          <button class="copy-btn" onclick="copyTSV()">엑셀 복사</button>
+          <button class="copy-btn" onclick="clearData()">전체 삭제</button>
+          <span style="font-size:11px;color:var(--text3);font-family:var(--mono)" id="rec-hint">기록: 0개</span>
+        </div>
+        <div class="tw"><table class="data-table">
+          <thead><tr>
+            <th>#</th><th>모드</th><th>매질1</th><th>n₁</th><th>매질2</th><th>n₂</th>
+            <th>λ(nm)</th><th>θ₁°</th><th>θ₂°</th><th>v₁(%c)</th><th>v₂(%c)</th>
+            <th>R(%)</th><th>임계각</th><th>전반사</th><th>온도°C</th><th>기타</th><th></th>
+          </tr></thead>
+          <tbody id="dtbody"><tr><td colspan="17" class="empty-msg">아직 기록된 데이터가 없습니다.</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- VAR -->
+      <div class="panel-content" id="ptab-var">
+        <div class="var-grid">
+          <div class="var-card vi">
+            <div class="vt">독립변인 (Independent Variable)</div>
+            <div class="var-item"><span class="vdot"></span>입사각 θ₁ (0~89°)</div>
+            <div class="var-item"><span class="vdot"></span>매질의 종류 / 굴절률 n</div>
+            <div class="var-item"><span class="vdot"></span>빛의 파장 λ (380~750nm)</div>
+            <div class="var-item"><span class="vdot"></span>렌즈 초점거리 f / 물체 거리</div>
+            <div class="var-item"><span class="vdot"></span>편광판 각도 θ</div>
+            <div class="var-item"><span class="vdot"></span>광섬유 코어·클래딩 굴절률</div>
+          </div>
+          <div class="var-card vd">
+            <div class="vt">종속변인 (Dependent Variable)</div>
+            <div class="var-item"><span class="vdot"></span>굴절각 θ₂</div>
+            <div class="var-item"><span class="vdot"></span>매질 내 빛의 속력 v = c/n</div>
+            <div class="var-item"><span class="vdot"></span>반사율 R (%)</div>
+            <div class="var-item"><span class="vdot"></span>임계각 / 전반사 여부</div>
+            <div class="var-item"><span class="vdot"></span>투과 광도 I (말뤼스 법칙)</div>
+            <div class="var-item"><span class="vdot"></span>상의 위치·배율·종류</div>
+            <div class="var-item"><span class="vdot"></span>프리즘 분산각</div>
+          </div>
+          <div class="var-card vc">
+            <div class="vt">통제변인 (Controlled Variable)</div>
+            <div class="var-item"><span class="vdot"></span>온도 (25°C 고정)</div>
+            <div class="var-item"><span class="vdot"></span>빛의 세기 (광도)</div>
+            <div class="var-item"><span class="vdot"></span>경계면 형태 (평면)</div>
+            <div class="var-item"><span class="vdot"></span>단색광 사용</div>
+            <div class="var-item"><span class="vdot"></span>렌즈 굴절률</div>
+            <div class="var-item"><span class="vdot"></span>광섬유 길이</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULA -->
+      <div class="panel-content" id="ptab-formula">
+        <div class="formula-grid">
+          <div class="formula-card"><div class="f-title">스넬의 법칙 (굴절)</div><div class="f-eq">n₁·sinθ₁ = n₂·sinθ₂</div><div class="f-desc">두 매질 경계에서 입사각과 굴절각의 관계</div></div>
+          <div class="formula-card"><div class="f-title">굴절률 ↔ 빛의 속력</div><div class="f-eq">n = c/v → v = c/n</div><div class="f-desc">c = 3×10⁸ m/s (진공에서의 광속)</div></div>
+          <div class="formula-card"><div class="f-title">임계각 (전반사 조건)</div><div class="f-eq">θ_c = arcsin(n₂/n₁)</div><div class="f-desc">n₁ &gt; n₂일 때, θ₁ ≥ θ_c이면 전반사 발생</div></div>
+          <div class="formula-card"><div class="f-title">프레넬 반사율</div><div class="f-eq">R = ((n₁−n₂)/(n₁+n₂))²</div><div class="f-desc">수직 입사 근사값</div></div>
+          <div class="formula-card"><div class="f-title">말뤼스의 법칙 (편광)</div><div class="f-eq">I = I₀·cos²θ</div><div class="f-desc">두 편광판 각도 차이에 따른 투과 광도</div></div>
+          <div class="formula-card"><div class="f-title">렌즈 공식 / 배율</div><div class="f-eq">1/f = 1/v + 1/u &nbsp; m = −v/u</div><div class="f-desc">볼록(f>0), 오목(f&lt;0). 실상이면 v>0</div></div>
+          <div class="formula-card"><div class="f-title">코시 방정식 (분산)</div><div class="f-eq">n(λ) = A + B/λ²</div><div class="f-desc">파장 짧을수록 n 크다 → 보라 더 많이 꺾임</div></div>
+          <div class="formula-card"><div class="f-title">광섬유 수치 개구수</div><div class="f-eq">NA = √(n_core² − n_clad²)</div><div class="f-desc">NA 클수록 빛 포획 능력 큼</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const C3 = 3e8;
+const MEDIA = {
+  '진공':       {n: 1.000},
+  '공기':       {n: 1.003},
+  '물':         {n: 1.333},
+  '에탄올':     {n: 1.361},
+  '유리':       {n: 1.500},
+  '크리스탈':   {n: 1.700},
+  '다이아몬드': {n: 2.417},
+  '메타물질':   {n: -1.200},
+  'SiC':        {n: 2.650},
+};
+const MCOL = {
+  '진공':'#888','공기':'#7ab8e8','물':'#4a9fd4','에탄올':'#6abfa8',
+  '유리':'#5ec8cc','크리스탈':'#a07cd4','다이아몬드':'#e8c040',
+  '메타물질':'#e05080','SiC':'#50c878'
+};
+const PRISM_WLS = [
+  {wl:415,n:1.532,lbl:'보라'},{wl:465,n:1.523,lbl:'파랑'},
+  {wl:530,n:1.517,lbl:'초록'},{wl:580,n:1.515,lbl:'노랑'},
+  {wl:650,n:1.513,lbl:'빨강'}
+];
+
+let mode = 'refract', lensType = 'convex';
+let m1 = '공기', m2 = '유리';
+let rows = [];
+
+// ─── Helpers ───────────────────────────────────────────────
+function nDisp(base, wl) {
+  if (base < 0) return base;
+  const B = (base - 1) * 0.008 * 302500;
+  return base + B / (wl * wl) - B / 302500;
+}
+function gN1() { return nDisp(MEDIA[m1].n, +document.getElementById('sl-wl').value); }
+function gN2() { return nDisp(MEDIA[m2].n, +document.getElementById('sl-wl').value); }
+function fresnel(n1, n2, t1) {
+  if (Math.abs(n1 + n2) < .001) return 0;
+  const s = (n1 / n2) * Math.sin(t1);
+  if (Math.abs(s) >= 1) return 100;
+  const t2 = Math.asin(Math.abs(s));
+  const rs = ((n1*Math.cos(t1) - n2*Math.cos(t2)) / (n1*Math.cos(t1) + n2*Math.cos(t2))) ** 2;
+  const rp = ((n1*Math.cos(t2) - n2*Math.cos(t1)) / (n1*Math.cos(t2) + n2*Math.cos(t1))) ** 2;
+  return Math.round((rs + rp) / 2 * 100);
+}
+function critAngle(n1, n2) {
+  if (n1 <= n2 || n2 < 0) return null;
+  return Math.round(Math.asin(n2 / n1) * 180 / Math.PI);
+}
+function wlColor(wl, a = 1) {
+  let r, g, b;
+  if (wl < 440)      { r = (440-wl)/60; g = 0;           b = 1; }
+  else if (wl < 490) { r = 0;           g = (wl-440)/50; b = 1; }
+  else if (wl < 510) { r = 0;           g = 1;           b = (510-wl)/20; }
+  else if (wl < 580) { r = (wl-510)/70; g = 1;           b = 0; }
+  else if (wl < 645) { r = 1;           g = (645-wl)/65; b = 0; }
+  else               { r = 1;           g = 0;           b = 0; }
+  return `rgba(${~~(r*255)},${~~(g*255)},${~~(b*255)},${a})`;
+}
+function h2r(hex, a) {
+  if (hex.startsWith('rgb')) {
+    const m = hex.match(/\d+/g);
+    return `rgba(${m[0]},${m[1]},${m[2]},${a})`;
+  }
+  return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;
+}
+
+// ─── UI Builders ───────────────────────────────────────────
+function buildMedBtns(id, active, cb) {
+  const g = document.getElementById(id); g.innerHTML = '';
+  Object.keys(MEDIA).forEach(k => {
+    const b = document.createElement('div');
+    b.className = 'med-btn' + (k === active ? ' on' : '');
+    b.textContent = k;
+    b.onclick = () => cb(k);
+    g.appendChild(b);
+  });
+}
+function rM1(k) { m1 = k; buildMedBtns('m1g', m1, rM1); onSlider(); }
+function rM2(k) { m2 = k; buildMedBtns('m2g', m2, rM2); onSlider(); }
+
+function setMode(m, el) {
+  mode = m;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('st-mode').textContent = {'refract':'굴절','prism':'프리즘','fiber':'광섬유','pol':'편광','lens':'렌즈'}[m];
+  // Show/hide controls
+  const show = (id, s) => { const e = document.getElementById(id); if(e) e.style.display = s ? '' : 'none'; };
+  show('ctrl-angle',  m==='refract'||m==='prism');
+  show('ctrl-wl',     true);
+  show('ctrl-media',  m==='refract');
+  show('ctrl-media2', m==='refract');
+  show('ctrl-apex',   m==='prism');
+  show('ctrl-ncore',  m==='fiber');
+  show('ctrl-nclad',  m==='fiber');
+  show('ctrl-polang', m==='pol');
+  show('ctrl-f',      m==='lens');
+  show('ctrl-u',      m==='lens');
+  show('ctrl-lenstype', m==='lens');
+  onSlider();
+}
+
+function setLensType(t) {
+  lensType = t;
+  document.getElementById('btn-convex').classList.toggle('on', t === 'convex');
+  document.getElementById('btn-concave').classList.toggle('on', t === 'concave');
+  onSlider();
+}
+
+function setPTab(name, el) {
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('ptab-' + name).classList.add('on');
+}
+
+// ─── Slider handler ────────────────────────────────────────
+function onSlider() {
+  const a  = +document.getElementById('sl-angle').value;
+  const wl = +document.getElementById('sl-wl').value;
+  const tp = +document.getElementById('sl-temp').value;
+  const it = +document.getElementById('sl-int').value;
+
+  document.getElementById('lbl-angle').textContent = a + '°';
+  document.getElementById('lbl-wl').textContent    = wl + ' nm';
+  document.getElementById('lbl-temp').textContent  = tp + '°C';
+  document.getElementById('lbl-int').textContent   = it + '%';
+  document.getElementById('lbl-apex').textContent  = document.getElementById('sl-apex').value + '°';
+  document.getElementById('lbl-ncore').textContent = (+document.getElementById('sl-ncore').value / 100).toFixed(2);
+  document.getElementById('lbl-nclad').textContent = (+document.getElementById('sl-nclad').value / 100).toFixed(2);
+  document.getElementById('lbl-polang').textContent = document.getElementById('sl-polang').value + '°';
+  const f = +document.getElementById('sl-f').value;
+  document.getElementById('lbl-f').textContent = (lensType === 'convex' ? '+' : '−') + f;
+  document.getElementById('lbl-u').textContent = document.getElementById('sl-u').value;
+
+  // wl color on slider thumb
+  document.querySelector('.wl-slider').style.setProperty('--wl-color', wlColor(wl));
+
+  updateStats();
+}
+
+function updateStats() {
+  const wl = +document.getElementById('sl-wl').value;
+  const a  = +document.getElementById('sl-angle').value;
+  const n1 = gN1(), n2 = gN2(), t1 = a * Math.PI / 180;
+  const sinT2 = (n1 / n2) * Math.sin(t1);
+  const isTIR = Math.abs(sinT2) > 1;
+
+  document.getElementById('st-v1').textContent = (C3/Math.abs(n1)/C3*100).toFixed(2) + '%c';
+  document.getElementById('st-v2').textContent = (C3/Math.abs(n2)/C3*100).toFixed(2) + '%c';
+  document.getElementById('st-t2').textContent = isTIR ? '없음' : (n2<0?'-':'') + Math.round(Math.asin(Math.abs(sinT2))*180/Math.PI) + '°';
+  document.getElementById('st-R').textContent  = fresnel(Math.abs(n1), Math.abs(n2), t1) + '%';
+  const ca = critAngle(Math.abs(n1), Math.abs(n2));
+  document.getElementById('st-crit').textContent = ca != null ? ca + '°' : '없음';
+  document.getElementById('tir-badge').classList.toggle('on', isTIR && mode === 'refract');
+
+  // extra stat by mode
+  const el = document.getElementById('st-extra');
+  const ll = document.getElementById('st-extra-lbl');
+  const vl = document.getElementById('st-extra-val');
+  if (mode === 'refract') {
+    ll.textContent = 'n₁/n₂'; vl.textContent = (Math.abs(n1)/Math.abs(n2)).toFixed(3);
+  } else if (mode === 'prism') {
+    ll.textContent = '분산매질'; vl.textContent = '유리(n=1.52)';
+  } else if (mode === 'fiber') {
+    const nc = +document.getElementById('sl-ncore').value/100;
+    const nd = +document.getElementById('sl-nclad').value/100;
+    ll.textContent = 'NA';
+    vl.textContent = nc > nd ? Math.sqrt(nc*nc - nd*nd).toFixed(3) : '—';
+  } else if (mode === 'pol') {
+    const th = +document.getElementById('sl-polang').value;
+    const I = Math.cos(th * Math.PI / 180) ** 2;
+    ll.textContent = '투과율 I/I₀'; vl.textContent = (I*100).toFixed(1) + '%';
+  } else if (mode === 'lens') {
+    const f0 = +document.getElementById('sl-f').value;
+    const u  = +document.getElementById('sl-u').value;
+    const f  = lensType === 'convex' ? f0 : -f0;
+    const v  = 1/(1/f + 1/u);
+    const m  = -v/u;
+    ll.textContent = '배율 m'; vl.textContent = isFinite(m) ? m.toFixed(2) : '∞';
+  }
+}
+
+// ─── Canvas Drawing ────────────────────────────────────────
+const cv  = document.getElementById('main-canvas');
+const ctx = cv.getContext('2d');
+
+function resize() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = cv.parentElement.getBoundingClientRect();
+  cv.width  = rect.width  * dpr;
+  cv.height = rect.height * dpr;
+  cv.style.width  = rect.width  + 'px';
+  cv.style.height = rect.height + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener('resize', () => { resize(); });
+resize();
+
+function drawArrow(x1,y1,x2,y2,col,lw) {
+  const dx=x2-x1,dy=y2-y1,l=Math.sqrt(dx*dx+dy*dy);
+  if(l<1)return;
+  const ux=dx/l,uy=dy/l;
+  ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  const ax=x2-ux*10,ay=y2-uy*10;
+  ctx.beginPath(); ctx.moveTo(x2,y2); ctx.lineTo(ax-uy*5,ay+ux*5); ctx.lineTo(ax+uy*5,ay-ux*5);
+  ctx.closePath(); ctx.fillStyle=col; ctx.fill(); ctx.restore();
+}
+function drawPhotons(x1,y1,x2,y2,col,alpha,cnt,spd) {
+  const t = (Date.now()/1000)*spd*.55;
+  const dx=x2-x1,dy=y2-y1,l=Math.sqrt(dx*dx+dy*dy);
+  if(l<1)return;
+  const ux=dx/l,uy=dy/l;
+  ctx.save(); ctx.globalAlpha=alpha*.88;
+  for(let i=0;i<cnt;i++) {
+    const ph=(t*.4+i/cnt)%1;
+    const px=x1+ux*ph*l,py=y1+uy*ph*l;
+    ctx.beginPath(); ctx.arc(px,py,3.5,0,Math.PI*2); ctx.fillStyle=col; ctx.fill();
+    ctx.beginPath(); ctx.arc(px,py,6,0,Math.PI*2); ctx.fillStyle=h2r(col,.18); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawArc(cx,cy,r,b,ang,col,lbl,neg) {
+  ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=.8; ctx.globalAlpha=.6;
+  ctx.beginPath();
+  if(neg) ctx.arc(cx,cy,r,b-ang,b,false);
+  else    ctx.arc(cx,cy,r,b,b+ang,false);
+  ctx.stroke(); ctx.restore();
+  ctx.font='12px var(--mono)'; ctx.fillStyle=col;
+  ctx.fillText(lbl, neg?cx-60:cx+(b<0?-60:14), cy+(b<0?-10:44));
+}
+function gridLines(W,H) {
+  ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.03)'; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.restore();
+}
+
+// ─── Mode Draw Functions ───────────────────────────────────
+function drawRefract(W,H) {
+  const a  = +document.getElementById('sl-angle').value;
+  const wl = +document.getElementById('sl-wl').value;
+  const it = +document.getElementById('sl-int').value / 100;
+  const n1 = gN1(), n2 = gN2(), t1 = a * Math.PI / 180;
+  const sinT2 = (n1/n2)*Math.sin(t1), isTIR = Math.abs(sinT2)>1;
+  const MY=H/2, CX=W/2, c1=MCOL[m1]||'#aaa', c2=MCOL[m2]||'#aaa', rc=wlColor(wl);
+
+  gridLines(W,H);
+  ctx.fillStyle=h2r(c1,.1); ctx.fillRect(0,0,W,MY);
+  ctx.fillStyle=h2r(c2,.14); ctx.fillRect(0,MY,W,MY);
+
+  ctx.font='500 12px var(--mono)';
+  ctx.fillStyle=c1; ctx.fillText(m1+'  n₁='+Math.abs(n1).toFixed(3),16,22);
+  ctx.fillStyle=c2; ctx.fillText(m2+'  n₂='+Math.abs(n2).toFixed(3),16,MY+22);
+
+  ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1; ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.moveTo(0,MY); ctx.lineTo(W,MY); ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(CX,MY-110); ctx.lineTo(CX,MY+110); ctx.stroke();
+  ctx.setLineDash([]); ctx.restore();
+
+  const L=Math.min(W,H)*.28;
+  const ix=CX-Math.sin(t1)*L, iy=MY-Math.cos(t1)*L;
+  drawArrow(ix,iy,CX,MY,rc,2.2*it);
+  drawPhotons(ix,iy,CX,MY,rc,it,5,1);
+
+  const rl=isTIR?L:L*.6, rx=CX+Math.sin(t1)*rl, ry=MY-Math.cos(t1)*rl;
+  drawArrow(CX,MY,rx,ry,rc,isTIR?2.2*it:.8*it);
+  if(isTIR) drawPhotons(CX,MY,rx,ry,rc,it,5,1);
+
+  if(!isTIR) {
+    const t2=Math.asin(Math.abs(sinT2)), sg=n2<0?-1:1;
+    const tx=CX+sg*Math.sin(t2)*L, ty=MY+Math.cos(t2)*L;
+    drawArrow(CX,MY,tx,ty,rc,2*it);
+    drawPhotons(CX,MY,tx,ty,rc,it,5,Math.abs(n1/n2));
+    drawArc(CX,MY,44,-Math.PI/2,t1,c1,'θ₁='+a+'°',false);
+    drawArc(CX,MY,44,Math.PI/2,t2,c2,(n2<0?'-':'')+Math.round(t2*180/Math.PI)+'°',n2<0);
+  } else {
+    ctx.font='12px var(--mono)'; ctx.fillStyle='#ff5b5b';
+    ctx.fillText('전반사 — 굴절광 없음',CX-80,MY+40);
+  }
+}
+
+function drawPrism(W,H) {
+  const pa  = +document.getElementById('sl-angle').value;
+  const apex= +document.getElementById('sl-apex').value;
+  const it  = +document.getElementById('sl-int').value/100;
+  gridLines(W,H);
+  const CX=W*.44,TOP=H*.12,SL=Math.min(W,H)*.52,ha=apex/2*Math.PI/180;
+  const px=[CX,CX-Math.sin(ha)*SL,CX+Math.sin(ha)*SL];
+  const py=[TOP,TOP+Math.cos(ha)*SL,TOP+Math.cos(ha)*SL];
+  ctx.beginPath(); ctx.moveTo(px[0],py[0]); ctx.lineTo(px[1],py[1]); ctx.lineTo(px[2],py[2]); ctx.closePath();
+  ctx.fillStyle='rgba(94,200,204,0.08)'; ctx.fill();
+  ctx.strokeStyle='rgba(94,200,204,0.5)'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.font='11px var(--mono)'; ctx.fillStyle='rgba(94,200,204,0.6)';
+  ctx.fillText('유리 프리즘',CX-28,TOP-10);
+
+  const leftNorm=Math.atan2(px[0]-px[1],py[1]-py[0]);
+  PRISM_WLS.forEach((item,i)=>{
+    const sn=Math.sin((pa+i*1.8)*Math.PI/180)/item.n;
+    if(Math.abs(sn)>1)return;
+    const t2=Math.asin(Math.abs(sn));
+    const col=wlColor(item.wl);
+    const frac=.35+i*.04;
+    const hitX=px[1]+(px[0]-px[1])*frac+i*2;
+    const hitY=py[1]+(py[0]-py[1])*frac+i*2;
+    const incX=hitX-60*Math.sin((pa+i*1.8)*Math.PI/180);
+    const incY=hitY-60*Math.cos((pa+i*1.8)*Math.PI/180);
+    const exitAng=leftNorm+t2+apex/2*Math.PI/180-.08;
+    const exitX=hitX+Math.sin(exitAng)*170;
+    const exitY=hitY+Math.cos(exitAng)*170;
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1.8*it; ctx.globalAlpha=.88*it;
+    ctx.beginPath(); ctx.moveTo(incX,incY); ctx.lineTo(hitX,hitY); ctx.lineTo(exitX,exitY); ctx.stroke();
+    ctx.font='500 11px var(--mono)'; ctx.globalAlpha=it;
+    ctx.fillStyle=col; ctx.fillText(item.lbl,exitX+6,exitY+i*4-2); ctx.restore();
+  });
+  ctx.font='11px var(--mono)'; ctx.fillStyle='rgba(122,136,153,0.7)';
+  ctx.fillText('꼭지각 '+apex+'° | 입사각 '+pa+'° | 분산: 보라 → 빨강 순서로 덜 꺾임',14,H-14);
+}
+
+function drawFiber(W,H) {
+  const nc=+document.getElementById('sl-ncore').value/100;
+  const nd=+document.getElementById('sl-nclad').value/100;
+  const it=+document.getElementById('sl-int').value/100;
+  const ca=nc>nd?Math.round(Math.asin(nd/nc)*180/Math.PI):null;
+  const wl=+document.getElementById('sl-wl').value;
+  gridLines(W,H);
+  const CY=H/2,X0=70,X1=W-30,CT=CY-55,CB=CY+55;
+  ctx.fillStyle='rgba(100,150,200,0.06)'; ctx.fillRect(X0,0,X1-X0,H);
+  ctx.fillStyle='rgba(80,200,120,0.1)'; ctx.fillRect(X0,CT,X1-X0,CB-CT);
+  ctx.strokeStyle='rgba(80,200,120,0.35)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(X0,CT); ctx.lineTo(X1,CT); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(X0,CB); ctx.lineTo(X1,CB); ctx.stroke();
+  ctx.font='11px var(--mono)'; ctx.fillStyle='rgba(122,136,153,0.7)';
+  ctx.fillText('클래딩  n='+nd.toFixed(2),X0+8,CT-10);
+  ctx.fillText('코어  n='+nc.toFixed(2),X0+8,CY+4);
+  ctx.fillText('클래딩  n='+nd.toFixed(2),X0+8,CB+18);
+  if(ca && nc>nd) {
+    const ba=(90-ca)*Math.PI/180;
+    const step=28;
+    [wlColor(wl),wlColor(Math.min(750,wl+60)),wlColor(Math.max(380,wl-60))].forEach((col,ci)=>{
+      ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1.8*it; ctx.globalAlpha=.82*it;
+      ctx.beginPath();
+      let cx=X0,cy=CY+(ci-1)*8,dy=1; ctx.moveTo(cx,cy);
+      for(let s=0;s<35;s++){
+        const nx=cx+step,ny=cy+dy*step*Math.tan(ba);
+        if(ny>=CB)dy=-1; else if(ny<=CT)dy=1;
+        const ry=Math.max(CT,Math.min(CB,ny));
+        ctx.lineTo(Math.min(nx,X1),ry); cx=nx; cy=ry; if(cx>X1)break;
+      }
+      ctx.stroke(); ctx.restore();
+    });
+    ctx.font='12px var(--mono)'; ctx.fillStyle='#50c878';
+    ctx.fillText('임계각 '+ca+'° → 전반사 발생 → 빛이 코어 안에 갇힘',X0+8,CT-28);
+    ctx.fillStyle='rgba(122,136,153,0.7)';
+    ctx.fillText('NA = '+Math.sqrt(nc*nc-nd*nd).toFixed(3),X1-100,CT-10);
+  } else {
+    ctx.save(); ctx.strokeStyle=wlColor(wl); ctx.lineWidth=1.8*it; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(X0,CY); ctx.lineTo(X0+160,CT-20); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
+    ctx.font='12px var(--mono)'; ctx.fillStyle='#ff5b5b';
+    ctx.fillText('n_core ≤ n_clad → 전반사 불가 → 빛이 코어 탈출',X0+8,CT-28);
+  }
+}
+
+function drawPol(W,H) {
+  const th=+document.getElementById('sl-polang').value;
+  const wl=+document.getElementById('sl-polwl')?+document.getElementById('sl-wl').value:550;
+  const I=Math.cos(th*Math.PI/180)**2, col=wlColor(wl);
+  gridLines(W,H);
+  const CY=H/2;
+  const secs=[
+    {x:W*.1,lbls:['비편광','입사광'],
+     draw(cx){for(let a=0;a<180;a+=22){const r=a*Math.PI/180;ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.3;ctx.globalAlpha=.55;ctx.beginPath();ctx.moveTo(cx-Math.cos(r)*26,CY-Math.sin(r)*26);ctx.lineTo(cx+Math.cos(r)*26,CY+Math.sin(r)*26);ctx.stroke();ctx.restore();}}},
+    {x:W*.35,lbls:['편광판1','(기준 0°)'],
+     draw(cx){ctx.save();ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-6,CY-38);ctx.lineTo(cx-6,CY+38);ctx.moveTo(cx+6,CY-38);ctx.lineTo(cx+6,CY+38);ctx.stroke();ctx.restore();ctx.save();ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.globalAlpha=.9;ctx.beginPath();ctx.moveTo(cx,CY-26);ctx.lineTo(cx,CY+26);ctx.stroke();ctx.restore();}},
+    {x:W*.62,lbls:['편광판2','('+th+'°)'],
+     draw(cx){const r=th*Math.PI/180,amp=Math.sqrt(I);ctx.save();ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=2;ctx.translate(cx,CY);ctx.rotate(r);ctx.beginPath();ctx.moveTo(-6,-38);ctx.lineTo(-6,38);ctx.moveTo(6,-38);ctx.lineTo(6,38);ctx.stroke();ctx.restore();ctx.save();ctx.strokeStyle=col;ctx.lineWidth=Math.max(.8,2.2*amp);ctx.globalAlpha=.9;ctx.translate(cx,CY);ctx.rotate(r);ctx.beginPath();ctx.moveTo(0,-26*amp);ctx.lineTo(0,26*amp);ctx.stroke();ctx.restore();}},
+    {x:W*.85,lbls:['투과광','I='+Math.round(I*100)+'%'],
+     draw(cx){const r=th*Math.PI/180,amp=Math.sqrt(I);ctx.save();ctx.strokeStyle=col;ctx.lineWidth=Math.max(.5,2.2*amp);ctx.globalAlpha=Math.max(.06,I*.9);ctx.translate(cx,CY);ctx.rotate(r);ctx.beginPath();ctx.moveTo(0,-26*amp);ctx.lineTo(0,26*amp);ctx.stroke();ctx.restore();}}
+  ];
+  ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(secs[0].x,CY); ctx.lineTo(secs[3].x,CY); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+  secs.forEach(s=>{s.draw(s.x);ctx.textAlign='center';ctx.font='10px var(--mono)';ctx.fillStyle='rgba(122,136,153,0.8)';s.lbls.forEach((ln,i)=>ctx.fillText(ln,s.x,CY+56+i*14));});
+  ctx.textAlign='left';
+  ctx.font='500 14px var(--mono)'; ctx.fillStyle='rgba(232,237,245,0.9)';
+  ctx.fillText('I = I₀ · cos²('+th+'°) = '+(I*100).toFixed(1)+'%·I₀',W/2-120,H-20);
+}
+
+function drawLens(W,H) {
+  const f0=+document.getElementById('sl-f').value;
+  const u =+document.getElementById('sl-u').value;
+  const wl=+document.getElementById('sl-wl').value;
+  const f =lensType==='convex'?f0:-f0;
+  const v =1/(1/f+1/u), m=-v/u;
+  const iR=lensType==='convex'&&v>0;
+  const OH=Math.min(60,H*.18);
+  gridLines(W,H);
+  const CX=W/2,CY=H/2;
+  ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,CY); ctx.lineTo(W,CY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX,20); ctx.lineTo(CX,H-20); ctx.stroke(); ctx.restore();
+  [f0,-f0].forEach(fp=>{
+    const fx=CX+fp;
+    if(fx>10&&fx<W-10){
+      ctx.save(); ctx.setLineDash([3,3]); ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=.8;
+      ctx.beginPath(); ctx.moveTo(fx,CY-12); ctx.lineTo(fx,CY+12); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+      ctx.font='11px var(--mono)'; ctx.fillStyle='rgba(122,136,153,0.6)'; ctx.textAlign='center';
+      ctx.fillText('F',fx,CY+22); ctx.textAlign='left';
+    }
+  });
+  ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=2;
+  if(lensType==='convex'){ctx.beginPath();ctx.moveTo(CX-9,CY-72);ctx.bezierCurveTo(CX+24,CY-36,CX+24,CY+36,CX-9,CY+72);ctx.stroke();ctx.beginPath();ctx.moveTo(CX+9,CY-72);ctx.bezierCurveTo(CX-24,CY-36,CX-24,CY+36,CX+9,CY+72);ctx.stroke();}
+  else{ctx.beginPath();ctx.moveTo(CX-9,CY-72);ctx.bezierCurveTo(CX+9,CY-36,CX+9,CY+36,CX-9,CY+72);ctx.stroke();ctx.beginPath();ctx.moveTo(CX+9,CY-72);ctx.bezierCurveTo(CX-9,CY-36,CX-9,CY+36,CX+9,CY+72);ctx.stroke();}
+  ctx.restore();
+  const objX=CX-u;
+  if(objX>10&&objX<W-10){
+    ctx.save(); ctx.strokeStyle='#3b9eff'; ctx.lineWidth=2; ctx.fillStyle='#3b9eff';
+    ctx.beginPath(); ctx.moveTo(objX,CY); ctx.lineTo(objX,CY-OH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(objX,CY-OH); ctx.lineTo(objX-5,CY-OH+8); ctx.lineTo(objX+5,CY-OH+8); ctx.closePath(); ctx.fill();
+    ctx.font='11px var(--mono)'; ctx.fillText('물체',objX+5,CY-OH-5); ctx.restore();
+  }
+  const imgX=CX+v, imgH=OH*Math.abs(m), imgDir=m>0?1:-1;
+  if(isFinite(v)&&imgX>5&&imgX<W-5&&Math.abs(v)<W*.9){
+    ctx.save(); ctx.strokeStyle=iR?'#f5a623':'rgba(245,166,35,0.4)'; ctx.lineWidth=2;
+    if(!iR)ctx.setLineDash([5,4]);
+    ctx.fillStyle=iR?'#f5a623':'rgba(245,166,35,0.4)';
+    ctx.beginPath(); ctx.moveTo(imgX,CY); ctx.lineTo(imgX,CY-imgH*imgDir); ctx.stroke();
+    ctx.setLineDash([]);
+    if(imgH>5){ctx.beginPath();ctx.moveTo(imgX,CY-imgH*imgDir);ctx.lineTo(imgX-4,CY-imgH*imgDir+8*imgDir);ctx.lineTo(imgX+4,CY-imgH*imgDir+8*imgDir);ctx.closePath();ctx.fill();}
+    ctx.font='11px var(--mono)'; ctx.fillStyle=iR?'#f5a623':'rgba(245,166,35,0.7)';
+    ctx.fillText(iR?'실상':'허상',imgX+5,CY-imgH*imgDir-(imgDir>0?7:-16)); ctx.restore();
+    if(objX>10){
+      const ty=CY-OH;
+      [[objX,CX,imgX,CY-imgH*imgDir,'rgba(80,200,200,0.4)'],[objX,CX+(f0>0?f0:-f0),imgX,CY-imgH*imgDir,'rgba(160,120,255,0.4)']].forEach(seg=>{
+        ctx.save(); ctx.strokeStyle=seg[4]; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+        ctx.beginPath(); ctx.moveTo(seg[0],ty); ctx.lineTo(seg[1],CY); ctx.lineTo(seg[2],seg[3]); ctx.stroke(); ctx.restore();
+      });
+    }
+  }
+  const info=isFinite(v)?`v=${Math.round(v)}  m=${m.toFixed(2)}  ${iR?'실상':'허상'}  ${Math.abs(m)>1?'확대':'축소'}`:'초점 위치 — 상 생기지 않음';
+  ctx.font='12px var(--mono)'; ctx.fillStyle='rgba(232,237,245,0.6)';
+  ctx.fillText(info,14,H-14);
+}
+
+// ─── Main Loop ─────────────────────────────────────────────
+function loop() {
+  const W = cv.width  / (window.devicePixelRatio||1);
+  const H = cv.height / (window.devicePixelRatio||1);
+  ctx.clearRect(0,0,W,H);
+  if      (mode==='refract') drawRefract(W,H);
+  else if (mode==='prism')   drawPrism(W,H);
+  else if (mode==='fiber')   drawFiber(W,H);
+  else if (mode==='pol')     drawPol(W,H);
+  else if (mode==='lens')    drawLens(W,H);
+  requestAnimationFrame(loop);
+}
+
+// ─── Data Recording ────────────────────────────────────────
+function record() {
+  const a=+document.getElementById('sl-angle').value;
+  const wl=+document.getElementById('sl-wl').value;
+  const tp=+document.getElementById('sl-temp').value;
+  const n1=gN1(),n2=gN2(),t1=a*Math.PI/180;
+  const sT=(n1/n2)*Math.sin(t1),iT=Math.abs(sT)>1;
+  const t2=iT?'—':(n2<0?'-':'')+Math.round(Math.asin(Math.abs(sT))*180/Math.PI);
+  const R=fresnel(Math.abs(n1),Math.abs(n2),t1);
+  const ca=critAngle(Math.abs(n1),Math.abs(n2));
+  let extra='';
+  if(mode==='prism'){extra='꼭지각='+document.getElementById('sl-apex').value+'°';}
+  else if(mode==='fiber'){extra='NA='+Math.sqrt(Math.max(0,gN1()**2-gN2()**2)).toFixed(3);}
+  else if(mode==='pol'){const th=+document.getElementById('sl-polang').value;extra='I/I₀='+(Math.cos(th*Math.PI/180)**2*100).toFixed(1)+'%';}
+  else if(mode==='lens'){const f0=+document.getElementById('sl-f').value,u=+document.getElementById('sl-u').value,f=lensType==='convex'?f0:-f0;const v=1/(1/f+1/u);extra='v='+Math.round(v)+' m='+(-v/u).toFixed(2);}
+  rows.push({num:rows.length+1,mode,m1,n1:Math.abs(n1).toFixed(3),m2,n2:Math.abs(n2).toFixed(3),wl,a,t2,v1:(C3/Math.abs(n1)/C3*100).toFixed(2),v2:(C3/Math.abs(n2)/C3*100).toFixed(2),R,crit:ca!=null?ca+'°':'없음',tir:iT?'O':'X',tp,extra});
+  renderTable();
+  document.getElementById('rec-hint').textContent='기록: '+rows.length+'개';
+}
+function renderTable() {
+  const tb=document.getElementById('dtbody');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="17" class="empty-msg">아직 기록된 데이터가 없습니다.</td></tr>';return;}
+  tb.innerHTML=rows.map((r,i)=>`<tr>
+    <td class="val">${r.num}</td><td>${r.mode}</td>
+    <td class="val">${r.m1}</td><td class="val">${r.n1}</td>
+    <td class="val">${r.m2}</td><td class="val">${r.n2}</td>
+    <td class="val">${r.wl}</td><td class="val">${r.a}</td>
+    <td class="val">${r.t2}</td><td class="val">${r.v1}</td>
+    <td class="val">${r.v2}</td><td class="val">${r.R}</td>
+    <td class="val">${r.crit}</td>
+    <td class="val" style="color:${r.tir==='O'?'#ff5b5b':'#00d4aa'}">${r.tir}</td>
+    <td class="val">${r.tp}</td><td>${r.extra}</td>
+    <td class="del" onclick="delRow(${i})">×</td>
+  </tr>`).join('');
+}
+function delRow(i){rows.splice(i,1);rows.forEach((r,j)=>r.num=j+1);renderTable();document.getElementById('rec-hint').textContent='기록: '+rows.length+'개';}
+function clearData(){if(rows.length&&confirm('전체 삭제?')){rows=[];renderTable();document.getElementById('rec-hint').textContent='기록: 0개';}}
+function copyTSV(){
+  const h='#\t모드\t매질1\tn₁\t매질2\tn₂\tλ(nm)\tθ₁°\tθ₂°\tv₁(%c)\tv₂(%c)\tR(%)\t임계각\t전반사\t온도°C\t기타';
+  const b=rows.map(r=>[r.num,r.mode,r.m1,r.n1,r.m2,r.n2,r.wl,r.a,r.t2,r.v1,r.v2,r.R,r.crit,r.tir,r.tp,r.extra].join('\t')).join('\n');
+  navigator.clipboard.writeText(h+'\n'+b).then(()=>{const btn=document.querySelector('.copy-btn');const orig=btn.textContent;btn.textContent='복사됨!';setTimeout(()=>btn.textContent=orig,2000);});
+}
+
+// ─── Init ──────────────────────────────────────────────────
+buildMedBtns('m1g','공기',rM1);
+buildMedBtns('m2g','유리',rM2);
+setMode('refract',document.querySelector('.mode-tab.on'));
+loop();
+</script>
+</body>
+</html>
