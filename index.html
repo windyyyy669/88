@@ -1011,3 +1011,1182 @@ loop();
 </script>
 </body>
 </html>
+/* ================================================================
+   step2-3.css
+   기존 CSS 변수 (--mono, --accent, --bg2, --border, --text2,
+   --text3, --bg, --bg3 등) 를 그대로 재사용합니다.
+   기존 style.css 아래에 <link> 하거나 붙여넣으세요.
+   ================================================================ */
+
+/* ── 공통 섹션 래퍼 ── */
+.step-section {
+  margin-bottom: 24px;
+}
+.step-section:last-child {
+  margin-bottom: 0;
+}
+
+/* ── 섹션 헤더 배지 ── */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.step-badge.s2 {
+  background: rgba(240, 192, 64, 0.1);
+  border: 1px solid rgba(240, 192, 64, 0.3);
+  color: #f0c040;
+}
+.step-badge.s3 {
+  background: rgba(29, 158, 117, 0.1);
+  border: 1px solid rgba(29, 158, 117, 0.3);
+  color: #1D9E75;
+}
+
+/* ── 흐름 연결 박스 (Step1 → Step2) ── */
+.flow-connect {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(55, 138, 221, 0.07);
+  border: 1px solid rgba(55, 138, 221, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: var(--text2);
+}
+.flow-connect .fc-val {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent);
+}
+.flow-connect .fc-arrow {
+  color: var(--text3);
+  font-size: 13px;
+}
+
+/* ── 렌즈 타입 버튼 ── */
+.lens-type-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.ltb {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 10px;
+  font-family: var(--mono);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  background: transparent;
+  color: var(--text3);
+  transition: all 0.15s;
+}
+.ltb:hover {
+  color: var(--text2);
+  border-color: var(--text3);
+}
+.ltb.active {
+  background: rgba(240, 192, 64, 0.08);
+  color: #f0c040;
+  border-color: rgba(240, 192, 64, 0.5);
+}
+
+/* ── 캔버스 공통 ── */
+.sim-canvas {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  background: var(--bg2);
+  margin-bottom: 10px;
+}
+
+/* ── 스탯 그리드 ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.stat-grid.cols3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.stat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.stat-box .s-lbl {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+.stat-box .s-val {
+  font-size: 15px;
+  font-weight: 500;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.stat-box .s-val.small {
+  font-size: 11px;
+}
+.stat-box.highlight-green { border-color: rgba(29, 158, 117, 0.35); }
+.stat-box.highlight-amber { border-color: rgba(240, 192, 64, 0.35); }
+.stat-box.highlight-red   { border-color: rgba(226, 75, 74, 0.35); }
+
+/* ── 공식 힌트 스트립 ── */
+.formula-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  padding: 8px 10px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.formula-strip .f-item {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text3);
+}
+.formula-strip .f-item b {
+  color: var(--text2);
+}
+
+/* ── 눈 타입 버튼 ── */
+.eye-type-row {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.eyb {
+  flex: 1;
+  padding: 7px 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 11px;
+  text-align: center;
+  background: transparent;
+  color: var(--text2);
+  line-height: 1.4;
+  transition: all 0.15s;
+}
+.eyb:hover {
+  border-color: var(--text3);
+  color: var(--text);
+}
+.eyb.active {
+  border-color: rgba(29, 158, 117, 0.5);
+  background: rgba(29, 158, 117, 0.07);
+  color: #1D9E75;
+  font-weight: 500;
+}
+.eyb small {
+  display: block;
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 300;
+  margin-top: 2px;
+}
+.eyb.active small {
+  color: rgba(29, 158, 117, 0.7);
+}
+
+/* ── 매치 바 (처방 vs 설계) ── */
+.match-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.match-title {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.match-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 5px;
+  font-family: var(--mono);
+}
+.match-row .m-lbl { color: var(--text2); }
+.match-row .m-val { font-weight: 500; color: var(--text); }
+.match-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 8px 0 5px;
+  overflow: hidden;
+}
+.match-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+.match-judge {
+  font-size: 10px;
+  font-family: var(--mono);
+  text-align: center;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ── 추천 카드 ── */
+.recommend-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.recommend-card .rc-title {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.recommend-card .rc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 11px;
+  margin-bottom: 5px;
+  gap: 6px;
+}
+.recommend-card .rc-row:last-child { margin-bottom: 0; }
+.recommend-card .rc-lbl { color: var(--text2); white-space: nowrap; }
+.recommend-card .rc-val {
+  font-family: var(--mono);
+  font-weight: 500;
+  color: var(--text);
+  text-align: right;
+  font-size: 11px;
+}
+.recommend-card .rc-val.teal { color: #5dcaa5; }
+
+/* ── 변인 요약 카드 ── */
+.variable-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.variable-card .vc-title {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.variable-card .vc-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 10px;
+  margin-bottom: 5px;
+  font-family: var(--mono);
+}
+.variable-card .vc-row:last-child { margin-bottom: 0; }
+.vc-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.vc-dot.ind { background: var(--accent); }
+.vc-dot.dep { background: #1D9E75; }
+.vc-dot.ctrl { background: #f0c040; }
+.vc-label { color: var(--text3); }
+.vc-content { color: var(--text2); flex: 1; }
+
+/* ── 기록 버튼 ── */
+.record-btn {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--text);    /* 기존 --text 변수가 밝은 색이면 그대로 */
+  color: var(--bg);
+  font-size: 12px;
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: opacity 0.15s;
+  margin-bottom: 6px;
+}
+.record-btn:hover { opacity: 0.82; }
+
+.copy-tsv-btn {
+  width: 100%;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text2);
+  font-size: 11px;
+  font-family: var(--mono);
+  transition: all 0.15s;
+}
+.copy-tsv-btn:hover {
+  color: var(--text);
+  border-color: var(--text3);
+}
+
+/* ── 데이터 테이블 ── */
+.data-table-section {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.dt-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.dt-header span {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.dt-count {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+.dt-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.dt-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+.dt-wrap thead th {
+  background: var(--bg2);
+  padding: 7px 10px;
+  text-align: left;
+  font-weight: 500;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.dt-wrap tbody td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.dt-wrap tbody tr:last-child td { border-bottom: none; }
+.dt-wrap tbody tr:hover { background: var(--bg2); }
+.dt-empty td {
+  text-align: center;
+  color: var(--text3);
+  padding: 18px !important;
+  font-size: 11px;
+}
+.cell-good  { color: #1D9E75 !important; }
+.cell-warn  { color: #f0c040 !important; }
+.cell-bad   { color: #E24B4A !important; }
+.cell-meta  { color: #ff6b8a !important; }
+.cell-del {
+  cursor: pointer;
+  color: var(--text3);
+  text-align: center;
+}
+.cell-del:hover { color: #E24B4A; }
+/**
+ * step2-lens.js  —  렌즈 설계 모듈 (Step 2)
+ *
+ * [사용법]
+ * 1. HTML에서 Step1의 굴절률 변수(window.currentN2)를 공유하거나
+ *    initLens()의 getN2 콜백으로 연결하세요.
+ * 2. 아래 HTML 구조를 메인 콘텐츠 영역에 추가하세요.
+ * 3. <script src="step2-lens.js"></script> 로 로드하세요.
+ *
+ * Step1과의 연결:
+ *   - window.currentN2 에 Step1의 현재 n2 값을 할당해두면 자동 반영됩니다.
+ *   - 또는 initLens({ getN2: () => yourN2Value }) 로 직접 연결하세요.
+ *
+ * HTML 구조 예시 (메인 콘텐츠 영역에 붙여넣기):
+ * ──────────────────────────────────────────────
+ * <section class="step-section" id="step2-section">
+ *   <span class="step-badge s2">STEP 2 · 렌즈 설계</span>
+ *
+ *   <div class="flow-connect">
+ *     <span class="fc-arrow">→</span>
+ *     <span>Step 1 측정 굴절률 n₂ =</span>
+ *     <span class="fc-val" id="lens-n2-display">1.500</span>
+ *     <span>이 렌즈 소재로 자동 적용됩니다</span>
+ *   </div>
+ *
+ *   <div class="lens-type-row">
+ *     <button class="ltb active" id="lt-bx" onclick="setLensType('biconvex')">볼록 (수렴)</button>
+ *     <button class="ltb" id="lt-bc" onclick="setLensType('biconcave')">오목 (발산)</button>
+ *     <button class="ltb" id="lt-pl" onclick="setLensType('planoconvex')">평볼록</button>
+ *     <button class="ltb" id="lt-mn" onclick="setLensType('meniscus')">메니스커스</button>
+ *   </div>
+ *
+ *   <div class="ctrl-row">
+ *     <label>곡률반경 R₁ <b id="lr1-val">100 mm</b></label>
+ *     <input type="range" id="lens-r1" min="20" max="500" value="100" step="5" oninput="updateLens()">
+ *   </div>
+ *   <div class="ctrl-row" id="r2-ctrl-row">
+ *     <label>곡률반경 R₂ <b id="lr2-val">100 mm</b></label>
+ *     <input type="range" id="lens-r2" min="20" max="500" value="100" step="5" oninput="updateLens()">
+ *   </div>
+ *
+ *   <canvas id="lens-canvas" class="sim-canvas" height="170"></canvas>
+ *
+ *   <div class="stat-grid cols3">
+ *     <div class="stat-box"><div class="s-lbl">초점거리 f</div><div class="s-val" id="stat-f">—</div></div>
+ *     <div class="stat-box"><div class="s-lbl">도수 P</div><div class="s-val" id="stat-p">—</div></div>
+ *     <div class="stat-box"><div class="s-lbl">렌즈 형태</div><div class="s-val small" id="stat-ltype">—</div></div>
+ *   </div>
+ *   <div class="stat-grid">
+ *     <div class="stat-box"><div class="s-lbl">수렴 / 발산</div><div class="s-val small" id="stat-opt">—</div></div>
+ *     <div class="stat-box"><div class="s-lbl">적용 n₂</div><div class="s-val" id="stat-nused">—</div></div>
+ *   </div>
+ *
+ *   <div class="formula-strip">
+ *     <div class="f-item"><b>렌즈 제작자 방정식</b>: 1/f = (n−1)(1/R₁ − 1/R₂)</div>
+ *     <div class="f-item"><b>도수</b>: P = 1000/f [D]</div>
+ *     <div class="f-item"><b>볼록</b>: f>0, P>0  /  <b>오목</b>: f&lt;0, P&lt;0</div>
+ *   </div>
+ * </section>
+ * ──────────────────────────────────────────────
+ */
+
+// ── 전역 상태 (Step3에서도 참조) ──
+window.lensState = {
+  type: 'biconvex',
+  R1: 100,
+  R2: 100,
+  f: Infinity,
+  P: 0,
+  n: 1.500,
+};
+
+const LENS_TYPE_NAMES = {
+  biconvex:    '볼록 (양면)',
+  biconcave:   '오목 (양면)',
+  planoconvex: '평볼록',
+  meniscus:    '메니스커스',
+};
+
+// ── 렌즈 타입 설정 ──
+function setLensType(t) {
+  window.lensState.type = t;
+  const ids = { biconvex:'lt-bx', biconcave:'lt-bc', planoconvex:'lt-pl', meniscus:'lt-mn' };
+  Object.values(ids).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+  const active = document.getElementById(ids[t]);
+  if (active) active.classList.add('active');
+
+  const r2row = document.getElementById('r2-ctrl-row');
+  if (r2row) r2row.style.opacity = t === 'planoconvex' ? '0.35' : '1';
+
+  updateLens();
+}
+
+// ── 부호 있는 곡률반경 계산 ──
+function getSignedRadii(type, r1, r2) {
+  switch (type) {
+    case 'biconvex':    return [r1, -r2];
+    case 'biconcave':   return [-r1, r2];
+    case 'planoconvex': return [r1, 1e9];
+    case 'meniscus':    return [r1, r2 * 0.7];
+    default:            return [r1, -r2];
+  }
+}
+
+// ── 초점거리 계산 ──
+function calcFocalLength(n, R1signed, R2signed) {
+  const a = Math.abs(R1signed) > 1e7 ? 0 : 1 / R1signed;
+  const b = Math.abs(R2signed) > 1e7 ? 0 : 1 / R2signed;
+  const inv = (n - 1) * (a - b);
+  return Math.abs(inv) < 1e-8 ? Infinity : 1 / inv;
+}
+
+// ── 렌즈 캔버스 그리기 ──
+function drawLensCanvas(n, f, P, type) {
+  const cv = document.getElementById('lens-canvas');
+  if (!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth || 400;
+  const H = 170;
+  cv.width  = W * dpr;
+  cv.height = H * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const CX = W / 2, CY = H / 2;
+  const LH = 52, LW = 16;
+
+  // 광축
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 0.8;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath(); ctx.moveTo(0, CY); ctx.lineTo(W, CY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 초점 광선 (isFinite(f) 일 때)
+  if (isFinite(f)) {
+    const fPx = Math.sign(f) * Math.min(Math.abs(f) * 0.22, W * 0.40);
+    const fpX = CX + fPx;
+    const palette = ['#4a9fd4', '#f0c040', '#e05080'];
+    const offsets = [-LH * 0.58, 0, LH * 0.58];
+
+    offsets.forEach((ry, i) => {
+      ctx.save();
+      ctx.strokeStyle = palette[i];
+      ctx.lineWidth = 1.2;
+      ctx.globalAlpha = 0.55;
+      // 입사
+      ctx.beginPath(); ctx.moveTo(0, CY + ry); ctx.lineTo(CX, CY + ry); ctx.stroke();
+      // 출사
+      if (f > 0) {
+        const slope = -ry / fPx;
+        ctx.beginPath(); ctx.moveTo(CX, CY + ry); ctx.lineTo(W, CY + ry + slope * (W - CX)); ctx.stroke();
+      } else {
+        // 발산: 가상 초점에서 온 것처럼
+        const slope = ry / (CX - fpX);
+        ctx.beginPath(); ctx.moveTo(CX, CY + ry); ctx.lineTo(W, CY + ry + slope * (W - CX)); ctx.stroke();
+        // 점선 연장 (음의 초점)
+        if (i === 1) {
+          ctx.setLineDash([3, 3]); ctx.globalAlpha = 0.22;
+          ctx.beginPath(); ctx.moveTo(fpX, CY - 20); ctx.lineTo(fpX, CY + 20); ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+      ctx.restore();
+    });
+
+    // 초점 표시 수직선
+    if (fpX > 12 && fpX < W - 12) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath(); ctx.moveTo(fpX, CY - 22); ctx.lineTo(fpX, CY + 22); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      ctx.font = '10px var(--mono, monospace)';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.fillText('f=' + (isFinite(f) ? Math.round(f) : '∞') + 'mm', fpX, CY - 26);
+    }
+  }
+
+  // 렌즈 본체
+  const lensColor = '#6ec6ca';
+  ctx.fillStyle   = 'rgba(110, 198, 202, 0.18)';
+  ctx.strokeStyle = lensColor;
+  ctx.lineWidth   = 1.8;
+
+  ctx.beginPath();
+  switch (type) {
+    case 'biconvex':
+      ctx.arc(CX - LW, CY, LH * 1.08, -0.52, 0.52);
+      ctx.arc(CX + LW, CY, LH * 1.08, Math.PI - 0.52, Math.PI + 0.52, true);
+      break;
+    case 'biconcave':
+      ctx.moveTo(CX, CY - LH);
+      ctx.arc(CX - LW * 2.2, CY, LH * 0.82, -0.62, 0.62, true);
+      ctx.lineTo(CX, CY + LH);
+      ctx.arc(CX + LW * 2.2, CY, LH * 0.82, Math.PI - 0.62, Math.PI + 0.62, false);
+      break;
+    case 'planoconvex':
+      ctx.moveTo(CX - LW, CY - LH);
+      ctx.arc(CX + LW, CY, LH * 1.08, Math.PI - 0.52, Math.PI + 0.52, true);
+      ctx.lineTo(CX - LW, CY + LH);
+      break;
+    case 'meniscus':
+      ctx.arc(CX - LW * 0.4, CY, LH * 1.18, -0.44, 0.44);
+      ctx.arc(CX + LW * 0.4, CY, LH * 0.98, Math.PI - 0.40, Math.PI + 0.40, true);
+      break;
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  // 도수 라벨
+  ctx.font = '500 12px var(--mono, monospace)';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = lensColor;
+  ctx.fillText(
+    isFinite(P) ? P.toFixed(2) + ' D' : '∞',
+    CX,
+    CY + LH + 18
+  );
+}
+
+// ── 메인 업데이트 함수 (외부에서 호출 가능) ──
+function updateLens() {
+  // n2를 Step1에서 받아오기 (window.currentN2 또는 폴백 1.500)
+  const n = (typeof window.currentN2 === 'number') ? window.currentN2 : 1.500;
+
+  const r1Input = document.getElementById('lens-r1');
+  const r2Input = document.getElementById('lens-r2');
+  if (!r1Input) return;
+
+  const r1v = +r1Input.value;
+  const r2v = +r2Input.value;
+  const [R1, R2] = getSignedRadii(window.lensState.type, r1v, r2v);
+
+  const f = calcFocalLength(n, R1, R2);
+  const P = isFinite(f) ? 1000 / f : 0;
+
+  // 상태 저장 (Step3에서 참조)
+  window.lensState.R1 = r1v;
+  window.lensState.R2 = r2v;
+  window.lensState.f  = f;
+  window.lensState.P  = P;
+  window.lensState.n  = n;
+
+  // UI 업데이트
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+  set('lens-n2-display', n.toFixed(3));
+  set('lr1-val', r1v + ' mm');
+  set('lr2-val', r2v + ' mm');
+  set('stat-f',  isFinite(f) ? Math.round(f) + ' mm' : '∞');
+  set('stat-p',  isFinite(P) ? P.toFixed(2) + ' D'   : '∞ D');
+  set('stat-ltype', LENS_TYPE_NAMES[window.lensState.type]);
+  set('stat-opt', f > 0 ? '수렴 (볼록)' : f < 0 ? '발산 (오목)' : '—');
+  set('stat-nused', n.toFixed(3));
+
+  drawLensCanvas(n, f, P, window.lensState.type);
+
+  // Step3 연동
+  if (typeof updateEye === 'function') updateEye();
+}
+
+// ── 초기화 ──
+document.addEventListener('DOMContentLoaded', () => {
+  updateLens();
+});
+    /**
+ * step3-eye.js  —  안구 시뮬레이션 & 안경 최적화 모듈 (Step 3)
+ *
+ * [의존성]
+ *   - step2-lens.js 가 먼저 로드되어 window.lensState 가 있어야 합니다.
+ *   - window.currentN2 : Step1의 현재 굴절률
+ *
+ * [사용법]
+ * HTML에 아래 구조를 붙여넣고 <script src="step3-eye.js"></script> 추가.
+ * Step1의 upd() 함수 마지막에  if(typeof updateEye==='function') updateEye();
+ * 를 추가하면 Step1 슬라이더 변경 시 Step3도 자동 연동됩니다.
+ *
+ * HTML 구조 예시:
+ * ──────────────────────────────────────────────
+ * <section class="step-section" id="step3-section">
+ *   <span class="step-badge s3">STEP 3 · 안경 최적화</span>
+ *
+ *   <div class="eye-type-row">
+ *     <button class="eyb active" id="eyb0" onclick="setEyeType(0)">정상시<small>0 D</small></button>
+ *     <button class="eyb" id="eyb1" onclick="setEyeType(1)">근시<small>초점 앞</small></button>
+ *     <button class="eyb" id="eyb2" onclick="setEyeType(2)">원시<small>초점 뒤</small></button>
+ *     <button class="eyb" id="eyb3" onclick="setEyeType(3)">난시<small>상 왜곡</small></button>
+ *   </div>
+ *
+ *   <div class="ctrl-row">
+ *     <label>시력 이상 정도 <b id="sev-val">2.0 D</b></label>
+ *     <input type="range" id="eye-sev" min="0.5" max="8" value="2" step="0.5" oninput="updateEye()">
+ *   </div>
+ *
+ *   <canvas id="eye-canvas" class="sim-canvas" height="200"></canvas>
+ *
+ *   <div class="match-wrap">
+ *     <div class="match-title">처방 도수 vs 현재 설계 도수</div>
+ *     <div class="match-row"><span class="m-lbl">필요 도수 (처방)</span><span class="m-val" id="match-need">—</span></div>
+ *     <div class="match-row"><span class="m-lbl">현재 설계 도수</span><span class="m-val" id="match-curr">—</span></div>
+ *     <div class="match-row"><span class="m-lbl">차이 |ΔP|</span><span class="m-val" id="match-diff">—</span></div>
+ *     <div class="match-bar"><div class="match-fill" id="match-fill"></div></div>
+ *     <div class="match-judge" id="match-judge"></div>
+ *   </div>
+ *
+ *   <div class="recommend-card">
+ *     <div class="rc-title">최적 렌즈 소재 추천</div>
+ *     <div class="rc-row"><span class="rc-lbl">최소 굴절률</span><span class="rc-val" id="rc-minn">—</span></div>
+ *     <div class="rc-row"><span class="rc-lbl">추천 소재</span><span class="rc-val" id="rc-mat">—</span></div>
+ *     <div class="rc-row"><span class="rc-lbl">두께 이점</span><span class="rc-val" id="rc-thin">—</span></div>
+ *     <div class="rc-row"><span class="rc-lbl">신소재 후보</span><span class="rc-val teal" id="rc-adv">—</span></div>
+ *   </div>
+ *
+ *   <div class="variable-card">
+ *     <div class="vc-title">변인 요약</div>
+ *     <div class="vc-row"><div class="vc-dot ind"></div><span class="vc-label">독립&nbsp;</span><span class="vc-content">매질, 입사각, 파장, R₁, R₂, 시력 이상 정도</span></div>
+ *     <div class="vc-row"><div class="vc-dot dep"></div><span class="vc-label">종속&nbsp;</span><span class="vc-content">θ₂, v₂, 초점거리 f, 도수 P, 교정 여부</span></div>
+ *     <div class="vc-row"><div class="vc-dot ctrl"></div><span class="vc-label">통제&nbsp;</span><span class="vc-content">온도 25°C, 단색광, 평면 경계면, 표준 안구 크기</span></div>
+ *   </div>
+ *
+ *   <button class="record-btn" onclick="recordData()">+ 실험 기록 추가</button>
+ *   <button class="copy-tsv-btn" onclick="copyTSV()">복사 (엑셀용 TSV)</button>
+ *
+ *   <div class="data-table-section">
+ *     <div class="dt-header">
+ *       <span>실험 데이터 표</span>
+ *       <span class="dt-count" id="dt-count">0건</span>
+ *     </div>
+ *     <div class="dt-wrap">
+ *       <table>
+ *         <thead>
+ *           <tr>
+ *             <th>#</th><th>매질2</th><th>n₂</th>
+ *             <th>θ₁(°)</th><th>θ₂(°)</th><th>v₂(%c)</th>
+ *             <th>렌즈형</th><th>R₁(mm)</th><th>R₂(mm)</th>
+ *             <th>f(mm)</th><th>P(D)</th>
+ *             <th>눈</th><th>처방(D)</th><th>차이(D)</th><th>추천소재</th>
+ *             <th></th>
+ *           </tr>
+ *         </thead>
+ *         <tbody id="dt-body">
+ *           <tr class="dt-empty"><td colspan="16">+ 실험 기록 버튼을 눌러 데이터를 추가하세요</td></tr>
+ *         </tbody>
+ *       </table>
+ *     </div>
+ *   </div>
+ * </section>
+ * ──────────────────────────────────────────────
+ */
+
+// ── 내부 상태 ──
+let _eyeType = 0;    // 0:정상, 1:근시, 2:원시, 3:난시
+let _dataRows = [];
+
+const EYE_NAMES = ['정상시', '근시', '원시', '난시'];
+const LENS_TYPE_KO = {
+  biconvex: '볼록', biconcave: '오목',
+  planoconvex: '평볼록', meniscus: '메니스커스',
+};
+
+// ── 눈 타입 설정 ──
+function setEyeType(i) {
+  _eyeType = i;
+  [0, 1, 2, 3].forEach(j => {
+    const el = document.getElementById('eyb' + j);
+    if (el) el.classList.toggle('active', j === i);
+  });
+  updateEye();
+}
+
+// ── 도수 계산 헬퍼 ──
+function _needP(eyeType, sev) {
+  switch (eyeType) {
+    case 0: return 0;
+    case 1: return -sev;   // 근시: 오목렌즈 (음)
+    case 2: return +sev;   // 원시: 볼록렌즈 (양)
+    case 3: return sev * 0.5; // 난시 (단순화)
+    default: return 0;
+  }
+}
+
+// ── 추천 소재 ──
+function _recommend(absPrescription) {
+  if (absPrescription > 6) return {
+    minN: '≥ 1.74', mat: '초고굴절 1.74', thin: '약 40% 얇아짐', adv: 'SiC 신소재 박막 연구 중'
+  };
+  if (absPrescription > 4) return {
+    minN: '≥ 1.67', mat: '고굴절 유리 1.67', thin: '약 25% 얇아짐', adv: '메타물질 음굴절 렌즈 연구 중'
+  };
+  if (absPrescription > 2) return {
+    minN: '≥ 1.60', mat: '폴리카보네이트 1.60', thin: '약 15% 얇아짐', adv: '나노구조 반사 방지 코팅 적용 가능'
+  };
+  return {
+    minN: '≥ 1.50', mat: 'CR-39 (표준 플라스틱)', thin: '기준 두께', adv: '—'
+  };
+}
+
+// ── 안구 캔버스 그리기 ──
+function drawEyeCanvas(eyeType, sev, needP, currP) {
+  const cv = document.getElementById('eye-canvas');
+  if (!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth || 400;
+  const H = 200;
+  cv.width  = W * dpr;
+  cv.height = H * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const EX = W * 0.62, EY = H / 2, ER = 60;
+  const retinaX = EX + ER * 0.72;
+
+  // 안구 외형 (공막)
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.ellipse(EX, EY, ER, ER * 0.82, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(180,220,240,0.04)';
+  ctx.fill();
+  ctx.restore();
+
+  // 망막
+  ctx.save();
+  ctx.strokeStyle = '#e05080';
+  ctx.lineWidth = 2.8;
+  ctx.globalAlpha = 0.7;
+  ctx.beginPath();
+  ctx.arc(EX + ER * 2.25, EY, ER * 2.05, Math.PI * 0.84, Math.PI * 1.16);
+  ctx.stroke();
+  ctx.restore();
+
+  // 각막
+  ctx.save();
+  ctx.strokeStyle = '#4a9fd4';
+  ctx.lineWidth = 2.2;
+  ctx.globalAlpha = 0.75;
+  ctx.beginPath();
+  ctx.arc(EX - ER * 0.76, EY, ER * 0.88, -0.50, 0.50);
+  ctx.stroke();
+  ctx.restore();
+
+  // 수정체
+  ctx.save();
+  ctx.fillStyle = 'rgba(240,192,64,0.14)';
+  ctx.strokeStyle = '#f0c040';
+  ctx.lineWidth = 1.2;
+  ctx.globalAlpha = 0.85;
+  ctx.beginPath();
+  ctx.ellipse(EX - 9, EY, 12, 20, 0, 0, Math.PI * 2);
+  ctx.fill(); ctx.stroke();
+  ctx.restore();
+
+  // 동공
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.65)';
+  ctx.beginPath();
+  ctx.ellipse(EX - ER * 0.56, EY, 4, 7, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // 교정렌즈 (시력 이상이 있을 때)
+  const corrX = W * 0.08;
+  const hasLens = eyeType > 0 && Math.abs(needP) > 0.05;
+  if (hasLens) {
+    ctx.save();
+    ctx.strokeStyle = needP < 0 ? '#4a9fd4' : '#1D9E75';
+    ctx.lineWidth = 1.8;
+    ctx.globalAlpha = 0.85;
+    const lh = 28;
+    if (needP < 0) {
+      // 오목 (근시 교정)
+      ctx.beginPath();
+      ctx.moveTo(corrX - 5, EY - lh);
+      ctx.quadraticCurveTo(corrX + 6, EY, corrX - 5, EY + lh);
+      ctx.moveTo(corrX + 5, EY - lh);
+      ctx.quadraticCurveTo(corrX - 6, EY, corrX + 5, EY + lh);
+      ctx.stroke();
+    } else {
+      // 볼록 (원시/난시 교정)
+      ctx.beginPath();
+      ctx.moveTo(corrX, EY - lh);
+      ctx.quadraticCurveTo(corrX + 10, EY, corrX, EY + lh);
+      ctx.moveTo(corrX, EY - lh);
+      ctx.quadraticCurveTo(corrX - 10, EY, corrX, EY + lh);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // 초점 위치 계산 (망막에서의 오프셋)
+  const offsetPx = (() => {
+    switch (eyeType) {
+      case 1: return -sev * 4.8;   // 근시: 앞
+      case 2: return  sev * 4.8;   // 원시: 뒤
+      case 3: return  sev * 2.8;   // 난시
+      default: return 0;
+    }
+  })();
+
+  // 교정 후 보정
+  const correctionOffset = isFinite(currP) ? (currP - needP) * 3.5 : 0;
+  const focalX = retinaX + offsetPx - correctionOffset;
+
+  // 광선 (5개)
+  const rayColors = ['#4a9fd4', '#78c0a8', '#f0c040', '#b07fd4', '#e05080'];
+  const rayOffsets = [-24, -12, 0, 12, 24];
+  const startX = hasLens ? corrX + 14 : 8;
+
+  rayOffsets.forEach((ry, i) => {
+    ctx.save();
+    ctx.strokeStyle = rayColors[i];
+    ctx.lineWidth = 1.0;
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(startX, EY + ry);
+    ctx.quadraticCurveTo(
+      EX - ER * 0.5,
+      EY + ry * 0.45,
+      focalX, EY
+    );
+    ctx.stroke();
+
+    // 초점 뒤 흐린 퍼짐
+    if (Math.abs(offsetPx - correctionOffset) > 6) {
+      ctx.globalAlpha = 0.14;
+      ctx.setLineDash([2, 4]);
+      const dir = ry > 0 ? 0.6 : -0.6;
+      ctx.beginPath();
+      ctx.moveTo(focalX, EY);
+      ctx.lineTo(Math.min(W - 4, focalX + 22), EY + dir * 9);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    ctx.restore();
+  });
+
+  // 초점 점
+  const onRetina = Math.abs(focalX - retinaX) < 8;
+  ctx.save();
+  ctx.fillStyle = onRetina ? '#1D9E75' : '#E24B4A';
+  ctx.globalAlpha = 0.95;
+  ctx.beginPath();
+  ctx.arc(focalX, EY, 5.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // 라벨
+  ctx.font = '10px var(--mono, monospace)';
+  ctx.textAlign = 'center';
+  ctx.globalAlpha = 1;
+
+  ctx.fillStyle = '#4a9fd4';
+  ctx.fillText('각막', EX - ER * 0.74, EY - ER * 0.72);
+  ctx.fillStyle = '#f0c040';
+  ctx.fillText('수정체', EX - 9, EY - 33);
+  ctx.fillStyle = '#e05080';
+  ctx.fillText('망막', retinaX, EY - ER * 0.62);
+
+  ctx.fillStyle = onRetina ? '#1D9E75' : '#E24B4A';
+  ctx.fillText(onRetina ? '초점 = 망막 ✓' : '초점 ≠ 망막', focalX, EY + 20);
+
+  if (hasLens) {
+    ctx.fillStyle = needP < 0 ? '#4a9fd4' : '#1D9E75';
+    ctx.fillText(needP < 0 ? '오목 교정 렌즈' : '볼록 교정 렌즈', corrX, EY - 40);
+  }
+
+  // 눈 상태 텍스트
+  ctx.font = '500 11px var(--mono, monospace)';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillText(EYE_NAMES[eyeType] + (eyeType > 0 ? ' · ' + sev.toFixed(1) + ' D' : ''), 8, 14);
+}
+
+// ── 메인 업데이트 ──
+function updateEye() {
+  const sevEl = document.getElementById('eye-sev');
+  if (!sevEl) return;
+  const sev = +sevEl.value;
+
+  const sevLbl = document.getElementById('sev-val');
+  if (sevLbl) sevLbl.textContent = sev.toFixed(1) + ' D';
+
+  const ls = window.lensState || {};
+  const currP = ls.P || 0;
+  const needP = _needP(_eyeType, sev);
+  const diff  = Math.abs(currP - needP);
+
+  // 매치 바
+  const pct = Math.max(0, 100 - (diff / 8) * 100);
+  const fill = document.getElementById('match-fill');
+  if (fill) {
+    fill.style.width = pct + '%';
+    fill.style.background =
+      pct > 72 ? '#1D9E75' :
+      pct > 45 ? '#f0c040' : '#E24B4A';
+  }
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('match-need', needP.toFixed(1) + ' D');
+  set('match-curr', isFinite(currP) ? currP.toFixed(2) + ' D' : '∞ D');
+  set('match-diff', diff.toFixed(2) + ' D');
+
+  const judge = document.getElementById('match-judge');
+  if (judge) {
+    if (diff < 0.3) {
+      judge.textContent = '✓ 처방에 매우 적합';
+      judge.style.color = '#1D9E75';
+    } else if (diff < 1.0) {
+      judge.textContent = '△ 근접 — 미세 조정 권장';
+      judge.style.color = '#f0c040';
+    } else {
+      judge.textContent = '✗ 처방과 차이 있음';
+      judge.style.color = '#E24B4A';
+    }
+  }
+
+  // 추천
+  const rec = _recommend(Math.abs(needP));
+  set('rc-minn', rec.minN);
+  set('rc-mat',  rec.mat);
+  set('rc-thin', rec.thin);
+  set('rc-adv',  rec.adv);
+
+  // 캔버스
+  drawEyeCanvas(_eyeType, sev, needP, currP);
+}
+
+// ── 데이터 기록 ──
+function recordData() {
+  const sevEl = document.getElementById('eye-sev');
+  if (!sevEl) return;
+  const sev = +sevEl.value;
+
+  const ls    = window.lensState || {};
+  const n2    = ls.n   || (window.currentN2 || 1.5);
+  const currP = ls.P   || 0;
+  const f     = ls.f   || Infinity;
+  const R1    = ls.R1  || 100;
+  const R2    = ls.R2  || 100;
+  const ltype = ls.type || 'biconvex';
+
+  // Step1 값 읽기 (window.step1State 가 있으면 사용)
+  const s1 = window.step1State || {};
+  const m2Name = s1.m2Name  || (document.querySelector('#m2g .med-chip.on, .med-chip.on')?.textContent?.split(' ')[0] || '—');
+  const theta1 = s1.theta1  || 0;
+  const theta2 = s1.theta2  || null;
+  const v2pct  = s1.v2pct   || (100 / n2).toFixed(2);
+
+  const needP = _needP(_eyeType, sev);
+  const diff  = Math.abs(currP - needP);
+  const rec   = _recommend(Math.abs(needP));
+
+  const row = {
+    num:    _dataRows.length + 1,
+    m2:     m2Name,
+    n2:     n2.toFixed(3),
+    t1:     theta1,
+    t2:     theta2 !== null ? theta2 : '전반사',
+    v2:     v2pct,
+    ltype:  LENS_TYPE_KO[ltype] || ltype,
+    R1:     R1,
+    R2:     ltype === 'planoconvex' ? '∞' : R2,
+    f:      isFinite(f) ? Math.round(f) : '∞',
+    P:      isFinite(currP) ? currP.toFixed(2) : '∞',
+    eye:    EYE_NAMES[_eyeType],
+    needP:  needP.toFixed(1),
+    diff:   diff.toFixed(2),
+    mat:    rec.mat,
+  };
+
+  _dataRows.push(row);
+  _renderTable();
+
+  const cnt = document.getElementById('dt-count');
+  if (cnt) cnt.textContent = _dataRows.length + '건';
+}
+
+// ── 테이블 렌더링 ──
+function _renderTable() {
+  const tbody = document.getElementById('dt-body');
+  if (!tbody) return;
+
+  if (_dataRows.length === 0) {
+    tbody.innerHTML = '<tr class="dt-empty"><td colspan="16">+ 실험 기록 버튼을 눌러 데이터를 추가하세요</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = _dataRows.map((r, i) => {
+    const diffNum = parseFloat(r.diff);
+    const diffClass = diffNum < 0.3 ? 'cell-good' : diffNum < 1.0 ? 'cell-warn' : 'cell-bad';
+    const t2Class   = r.t2 === '전반사' ? 'cell-meta' : '';
+    return `<tr>
+      <td>${r.num}</td>
+      <td>${r.m2}</td>
+      <td>${r.n2}</td>
+      <td>${r.t1}</td>
+      <td class="${t2Class}">${r.t2}</td>
+      <td>${r.v2}</td>
+      <td>${r.ltype}</td>
+      <td>${r.R1}</td>
+      <td>${r.R2}</td>
+      <td>${r.f}</td>
+      <td>${r.P}</td>
+      <td>${r.eye}</td>
+      <td>${r.needP}</td>
+      <td class="${diffClass}">${r.diff}</td>
+      <td style="font-size:10px">${r.mat}</td>
+      <td class="cell-del" onclick="_delRow(${i})">×</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── 행 삭제 ──
+function _delRow(i) {
+  _dataRows.splice(i, 1);
+  _dataRows.forEach((r, j) => r.num = j + 1);
+  _renderTable();
+  const cnt = document.getElementById('dt-count');
+  if (cnt) cnt.textContent = _dataRows.length + '건';
+}
+
+// ── TSV 복사 (엑셀 붙여넣기) ──
+function copyTSV() {
+  const head = '#\t매질2\tn₂\tθ₁(°)\tθ₂(°)\tv₂(%c)\t렌즈형\tR₁(mm)\tR₂(mm)\tf(mm)\tP(D)\t눈\t처방(D)\t차이(D)\t추천소재';
+  const body = _dataRows.map(r =>
+    `${r.num}\t${r.m2}\t${r.n2}\t${r.t1}\t${r.t2}\t${r.v2}\t${r.ltype}\t${r.R1}\t${r.R2}\t${r.f}\t${r.P}\t${r.eye}\t${r.needP}\t${r.diff}\t${r.mat}`
+  ).join('\n');
+
+  navigator.clipboard.writeText(head + '\n' + body).then(() => {
+    const btn = document.querySelector('.copy-tsv-btn');
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = '✓ 복사됨!';
+      btn.style.color = '#1D9E75';
+      setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+    }
+  }).catch(() => alert('복사에 실패했습니다. 브라우저 권한을 확인하세요.'));
+}
+
+// ── 초기화 ──
+document.addEventListener('DOMContentLoaded', () => {
+  updateEye();
+});
+      
